@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>SISTEMA MOBIFLOW</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px 0;
+      color: #212529;
+    }
+    .card {
+      max-width: 960px;
+      margin: auto;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(to right, #ffffff, #f9fbff);
+    }
+    .form-control, .form-select {
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+    .hidden { display: none; }
+    .step { display: none; }
+    .step.active { display: block; }
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+    .step-indicator div {
+      flex: 1;
+      text-align: center;
+      padding: 12px;
+      background-color: #e0e7ff;
+      border-radius: 8px;
+      margin: 0 5px;
+      font-weight: 500;
+      transition: 0.3s;
+      font-size: 1rem;
+    }
+    .step-indicator .active {
+      background-color: #0d6efd;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    #map {
+  width: 100% !important;
+  height: 300px !important;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  display: block;
+  min-height: 300px;
+  min-width: 100%;
+}
+    .btn-primary {
+      background-color: #0d6efd;
+      border: none;
+      font-size: 1rem;
+      padding: 10px 24px;
+    }
+    .btn-primary:hover {
+      background-color: #0b5ed7;
+    }
+    .btn-outline-primary {
+      color: #0d6efd;
+      border-color: #0d6efd;
+      font-size: 1rem;
+      padding: 10px 24px;
+    }
+    .btn-outline-primary:hover {
+      background-color: #0d6efd;
+      color: white;
+    }
+    body.dark-mode .text-primary,
+    body.dark-mode .btn-primary,
+    body.dark-mode .btn-outline-primary {
+      text-shadow: 1px 1px 2px #ffffff;
+    }
+    .form-check-label {
+      font-size: 1rem;
+    }
+    .text-muted {
+      font-size: 0.95rem;
+    }
+    .text-primary {
+      color: #0d6efd !important;
+      font-weight: 600;
+    }
+    h3, h5, label, p {
+      color: #212529;
+    }
+    .dark-mode h3, .dark-mode h5, .dark-mode label, .dark-mode p {
+      color: #ffffff !important;
+    }
+  </style>
+</head>
+<body>
+<div class="container mb-3 text-end">
+<button id="toggleTheme" class="btn btn-sm btn-outline-secondary">🌙 Tema Escuro</button>
+</div>
+
+<div class="container">
+  <div class="card">
+    <h3 class="text-center text-primary mb-4">SISTEMA MOBIFLOW</h3>
+
+    <div class="step-indicator">
+      <div class="step-tab active" data-step="0">1. Termos</div>
+      <div class="step-tab" data-step="1">2. Validação</div>
+      <div class="step-tab" data-step="2">3. Dados</div>
+      <div class="step-tab" data-step="3">4. Envio</div>
+    </div>
+
+    <!-- PASSO 1 - TERMOS -->
+    <div class="step active" id="step-0">
+      <p><strong>Termos e Condições de Uso</strong></p>
+      <div style="max-height: 300px; overflow-y: auto; font-size: 0.9rem;">
+        <p>Termos e Condições de Uso
+As informações prestadas são de inteira responsabilidade do Declarante, que deverá ser maior de 18 (dezoito anos) ou emancipado, podendo sofrer sanções penais/administrativas diante de informações falsas.
+
+Os dados relacionados ao sinistro poderão ser fornecidos, em caráter sigiloso, a outros órgãos públicos e entidades privadas, com objetivos de prevenção a fraude, estatísticas de trânsito, prevenção e identificação de nexo causal de sinistros, entre outros.
+
+O registro só é válido para informar sinistros sem vítimas, de veículos não oficiais, que não tenham causado danos ao meio ambiente, ao patrimônio público, que não envolvam condutor estrangeiro, nem crime de trânsito e com ocorrência no Município do Recife, em no máximo 24 (vinte e quatro) horas do momento do seu registro neste sistema.
+
+É fundamental que o formulário seja preenchido com a maior quantidade de detalhes possível, pois todas as informações fornecidas poderão auxiliar na redução de riscos de sinistros pelas ações de engenharia de trânsito da Autarquia de Trânsito e Transporte Urbano do Recife - MobiFlow.
+
+O Declarante poderá informar dados parciais do(s) veiculo(s) envolvido(s), caso não tenha identificado a(s) placa(s) por completo como por exemplo marca, cor e modelo.
+
+O Declarante autoriza a disponibilização do seu relato do sinistro de trânsito às outras partes envolvidas na ocorrência registrada.
+
+Após a conclusão e envio do formulário, a MobiFlow fornecerá um número de protocolo ao usuário que deverá ser guardado para acesso ao registro da ocorrência após a homologação do RAT.
+
+Após envio do formulário, este não poderá ser alterado.
+
+O preenchimento do formulário não implica automaticamente na geração do RAT (Registro de Sinistro de Trânsito). Todos os relatos estão sujeitos à verificação da MobiFlow, que disponibilizará o documento oficial num prazo máximo de 03 (três) dias úteis.
+
+Caso o registro do RAT seja indeferido, devidamente justificado pela MobiFlow, o declarante deverá acionar outros meios para registrar a ocorrência.
+
+Esta ferramenta permite que o registro de um sinistro seja reportado às autoridades de maneira segura e eficiente, em formato mais conveniente ao cidadão.
+
+Este website está disponível 24 (vinte e quatro) horas por dia, 07 (sete) dias por semana.
+
+Falsa comunicação é crime previsto no artigo 340 do Código Penal Brasileiro, ficando sujeito o autor à detenção de 1 a 5 meses ou multa.</p>
+      </div>
+      <div class="form-check mt-3">
+        <input class="form-check-input" type="checkbox" id="aceitaTermos">
+        <label class="form-check-label" for="aceitaTermos">Li e aceito os termos</label>
+      </div>
+    </div>
+
+    <!-- PASSO 2 - VALIDAÇÃO -->
+    <div class="step" id="step-1">
+      <div class="mb-3">
+        <label>É maior de 18 anos ou emancipado?</label>
+        <select class="form-select" id="validMaior">
+          <option value="">Selecione</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Ocorreu em área particular?</label>
+        <select class="form-select" id="validPrivado">
+          <option value="">Selecione</option>
+          <option value="nao">Não</option>
+          <option value="sim">Sim</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Foi em rodovia estadual ou federal?</label>
+        <select class="form-select" id="validRodovia">
+          <option value="">Selecione</option>
+          <option value="nao">Não</option>
+          <option value="sim">Sim</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Ocorreu na cidade de Recife?</label>
+        <select class="form-select" id="validCidade">
+          <option value="">Selecione</option>
+          <option value="sim">Sim</option>
+          <option value="nao">Não</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label>Houve feridos?</label>
+        <select class="form-select" id="validFeridos">
+          <option value="">Selecione</option>
+          <option value="nao">Não</option>
+          <option value="sim">Sim</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- PASSO 3 - DADOS DO SINISTRO -->
+    <!-- PASSO 3 - DADOS DO SINISTRO -->
+<div class="step" id="step-2">
+  <div class="row mb-3">
+    <div class="col-md-6">
+      <label for="dataSinistro">Data do Sinistro *</label>
+      <input type="date" class="form-control" id="dataSinistro" required>
+    </div>
+    <div class="col-md-6">
+      <label for="pontoReferencia">Ponto de Referência</label>
+      <input type="text" class="form-control" id="pontoReferencia" placeholder="Ex: Próximo ao número 1455">
+    </div>
+  </div>
+
+  <h5 class="bg-primary text-white p-2 rounded">CIRCUNSTÂNCIAS DO SINISTRO</h5>
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label for="sentidoVia">Sentido da Via *</label>
+      <select class="form-select" id="sentidoVia" required>
+        <option value="">Selecione</option>
+        <option>Duplo</option>
+        <option>Único</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="sinalizacaoVia">Sinalização da Via *</label>
+      <select class="form-select" id="sinalizacaoVia" required>
+        <option value="">Selecione</option>
+        <option>Existente</option>
+        <option>Inexistente</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="condicaoVia">Condição *</label>
+      <select class="form-select" id="condicaoVia" required>
+        <option value="">Selecione</option>
+        <option>Boa</option>
+        <option>Irregular</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label for="naturezaSinistro">Natureza do Sinistro *</label>
+      <select class="form-select" id="naturezaSinistro" required>
+        <option value="">Selecione</option>
+        <option>Colisão</option>
+        <option>Capotamento</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="localVia">Local da Via *</label>
+      <select class="form-select" id="localVia" required>
+        <option value="">Selecione</option>
+        <option>Cruzamento</option>
+        <option>Faixa exclusiva</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="tempoClima">Tempo/Clima *</label>
+      <select class="form-select" id="tempoClima" required>
+        <option value="">Selecione</option>
+        <option>Sol</option>
+        <option>Chuva</option>
+        <option>Nublado</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <label for="semáforo">Semáforo *</label>
+      <select class="form-select" id="semáforo" required>
+        <option value="">Selecione</option>
+        <option>Funcionando</option>
+        <option>Apagado</option>
+        <option>Inexistente</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label for="conservacaoVia">Conservação da Via *</label>
+      <select class="form-select" id="conservacaoVia" required>
+        <option value="">Selecione</option>
+        <option>Boa</option>
+        <option>Desgastada</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MAPA (mantido como pedido) -->
+  <div class="mb-3">
+    <label>Localização no Mapa</label>
+    <div id="map" style="height: 300px;"></div>
+    <p class="text-muted" id="enderecoSelecionado">Endereço: <em>nenhum selecionado</em></p>
+  </div>
+
+  <!-- ENVOLVIDOS -->
+  <h5 class="bg-primary text-white p-2 rounded">ENVOLVIDOS</h5>
+  <button type="button" class="btn btn-secondary mb-2" id="btnAdicionarPessoa">Adicionar Pessoa</button>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Documento</th>
+        <th>Tipo Pessoa</th>
+        <th>Nome</th>
+        <th>Característica do Veículo</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaEnvolvidos">
+      <tr><td colspan="4">Nenhuma pessoa adicionada.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- VEÍCULOS ENVOLVIDOS -->
+  <h5 class="bg-primary text-white p-2 rounded">VEÍCULOS ENVOLVIDOS</h5>
+  <button type="button" class="btn btn-secondary mb-2" id="btnAdicionarVeiculo">Adicionar Veículo</button>
+  <p class="text-muted">O veículo deve estar vinculado a uma pessoa. Mas, caso tenha se evadido ou não tenha os dados da pessoa, adicione separadamente clicando em <strong>Adicionar Veículo</strong>.</p>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Placa</th>
+        <th>Tipo</th>
+        <th>Característica</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaVeiculos">
+      <tr><td colspan="3">Nenhum veículo adicionado.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ANEXOS -->
+  <h5 class="bg-primary text-white p-2 rounded">ANEXOS</h5>
+  <button type="button" class="btn btn-secondary mb-2" id="btnAdicionarAnexo">Adicionar Anexo</button>
+  <p class="text-muted">É necessário anexar a <strong>CNH</strong> do condutor e o <strong>CRLV</strong> do veículo. Só é permitido 4 imagens por veículo.</p>
+</div>
+
+
+    <!-- PASSO 4 - CONFIRMAÇÃO -->
+    <div class="step" id="step-3">
+      <h5 class="text-primary">Confirmação</h5>
+      <p>Revise os dados preenchidos antes de confirmar o envio.</p>
+      <div id="resumoDados">(resumo será preenchido via JS)</div>
+    </div>
+
+    <!-- BOTÕES DE NAVEGAÇÃO -->
+    <div class="d-flex justify-content-between mt-4">
+      <button class="btn btn-secondary" id="btnAnterior" disabled>Voltar</button>
+      <button class="btn btn-primary" id="btnProximo">Avançar</button>
+    </div>
+  </div>
+</div>
+<!-- ========== MODAL ADICIONAR PESSOA ========== -->
+<div class="modal fade" id="modalAdicionarPessoa" tabindex="-1" aria-labelledby="modalAdicionarPessoaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Adicionar Pessoa Envolvida</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formPessoa">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="tipoPessoa" class="form-label">Tipo de Pessoa *</label>
+              <select id="tipoPessoa" class="form-select" required>
+                <option value="">Selecione</option>
+                <option value="Condutor">Condutor</option>
+                <option value="Passageiro">Passageiro</option>
+                <option value="Pedestre">Pedestre</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="documentoPessoa" class="form-label">Documento *</label>
+              <input type="text" id="documentoPessoa" class="form-control" placeholder="CPF ou RG" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="nomePessoa" class="form-label">Nome Completo *</label>
+            <input type="text" id="nomePessoa" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="observacaoPessoa" class="form-label">Observações</label>
+            <textarea id="observacaoPessoa" class="form-control" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="salvarPessoa()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL ADICIONAR VEÍCULO ========== -->
+<div class="modal fade" id="modalAdicionarVeiculo" tabindex="-1" aria-labelledby="modalAdicionarVeiculoLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Adicionar Veículo Envolvido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formVeiculo">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label for="placaVeiculo" class="form-label">Placa *</label>
+              <input type="text" id="placaVeiculo" class="form-control" placeholder="ABC1D23" required>
+            </div>
+            <div class="col-md-4">
+              <label for="tipoVeiculo" class="form-label">Tipo *</label>
+              <select id="tipoVeiculo" class="form-select" required>
+                <option value="">Selecione</option>
+                <option>Carro</option>
+                <option>Moto</option>
+                <option>Caminhão</option>
+                <option>Ônibus</option>
+                <option>Bicicleta</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="caracteristicaVeiculo" class="form-label">Característica</label>
+              <input type="text" id="caracteristicaVeiculo" class="form-control" placeholder="Cor, dano, etc.">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="vinculoPessoa" class="form-label">Vincular à Pessoa</label>
+            <select id="vinculoPessoa" class="form-select">
+              <option value="">Selecione uma pessoa</option>
+              <!-- Adicionado via JS se necessário -->
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="salvarVeiculo()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL ADICIONAR ANEXO ========== -->
+<div class="modal fade" id="modalAdicionarAnexo" tabindex="-1" aria-labelledby="modalAdicionarAnexoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Adicionar Anexo</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formAnexo">
+          <div class="mb-3">
+            <label for="tipoAnexo" class="form-label">Tipo de Documento *</label>
+            <select id="tipoAnexo" class="form-select" required>
+              <option value="">Selecione</option>
+              <option>CNH</option>
+              <option>CRLV</option>
+              <option>Foto do Acidente</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="arquivoAnexo" class="form-label">Arquivo (JPEG/PNG/PDF)</label>
+            <input type="file" id="arquivoAnexo" class="form-control" accept=".jpg,.jpeg,.png,.pdf" multiple required>
+            <small class="text-muted">Máximo 4 arquivos. CNH e CRLV são obrigatórios.</small>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" onclick="salvarAnexo()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+let passoAtual = 0;
+const steps = document.querySelectorAll('.step');
+const tabs = document.querySelectorAll('.step-tab');
+const btnAnterior = document.getElementById('btnAnterior');
+const btnProximo = document.getElementById('btnProximo');
+const aceitaTermos = document.getElementById('aceitaTermos');
+
+function atualizarPasso(novoPasso) {
+  if (novoPasso < 0 || novoPasso >= steps.length) return;
+  steps[passoAtual].classList.remove('active');
+  tabs[passoAtual].classList.remove('active');
+  passoAtual = novoPasso;
+  steps[passoAtual].classList.add('active');
+  tabs[passoAtual].classList.add('active');
+  btnAnterior.disabled = passoAtual === 0;
+  btnProximo.textContent = passoAtual === steps.length - 1 ? 'Confirmar e Enviar' : 'Avançar';
+}
+
+btnAnterior.onclick = () => atualizarPasso(passoAtual - 1);
+btnProximo.onclick = () => {
+  if (passoAtual === 0 && !aceitaTermos.checked) return alert('Você deve aceitar os termos.');
+  if (passoAtual === 1 && !validarCondicoes()) return;
+  if (passoAtual === steps.length - 1) return alert('Formulário enviado com sucesso! Nº protocolo: 2025-' + Math.floor(Math.random()*100000));
+  atualizarPasso(passoAtual + 1);
+};
+
+function validarCondicoes() {
+  const v1 = document.getElementById('validMaior').value;
+  const v2 = document.getElementById('validPrivado').value;
+  const v3 = document.getElementById('validRodovia').value;
+  const v4 = document.getElementById('validCidade').value;
+  const v5 = document.getElementById('validFeridos').value;
+  if (v1 !== 'sim' || v2 !== 'nao' || v3 !== 'nao' || v4 !== 'sim' || v5 !== 'nao') {
+    alert('Não é possível continuar: as condições obrigatórias não foram atendidas.');
+    return false;
+  }
+  return true;
+}
+
+// Tema escuro
+const toggleBtn = document.getElementById('toggleTheme');
+const body = document.body;
+const card = document.querySelector('.card');
+function setTheme(darkMode) {
+  body.classList.toggle('bg-dark', darkMode);
+  body.classList.toggle('text-white', darkMode);
+  body.classList.toggle('dark-mode', darkMode);
+  card.classList.toggle('bg-secondary', darkMode);
+  card.classList.toggle('text-white', darkMode);
+  toggleBtn.innerText = darkMode ? '☀️ Tema Claro' : '🌙 Tema Escuro';
+  localStorage.setItem('theme', darkMode ? 'dark' : 'light');
+}
+toggleBtn.addEventListener('click', () => {
+  const dark = body.classList.contains('bg-dark');
+  setTheme(!dark);
+});
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark') setTheme(true);
+});
+
+// Mapa
+let map = L.map('map').setView([-8.0476, -34.8770], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+let marker;
+const iconCrash = L.icon({
+  iconUrl: 'https://cdn-icons-png.flaticon.com/512/7481/7481560.png',
+  iconSize: [40, 40],
+  iconAnchor: [20, 40]
+});
+map.on('click', async function(e) {
+  const { lat, lng } = e.latlng;
+  if (marker) map.removeLayer(marker);
+  marker = L.marker([lat, lng], { icon: iconCrash }).addTo(map);
+  const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`);
+  const data = await res.json();
+  document.getElementById('enderecoSelecionado').innerHTML = `Endereço: <strong>${data.display_name}</strong>`;
+});
+const observer = new MutationObserver(() => {
+  if (document.getElementById('step-2').classList.contains('active')) {
+    setTimeout(() => map.invalidateSize(), 200);
+  }
+});
+observer.observe(document.getElementById('step-2'), { attributes: true, attributeFilter: ['class'] });
+
+</script>
+
+
+<script>
+// ------------------ ADIÇÃO DE PESSOAS ------------------
+document.getElementById('btnAdicionarPessoa').addEventListener('click', () => {
+  const modal = new bootstrap.Modal(document.getElementById('modalAdicionarPessoa'));
+  modal.show();
+});
+
+function salvarPessoa() {
+  const tipo = document.getElementById('tipoPessoa').value;
+  const doc = document.getElementById('documentoPessoa').value;
+  const nome = document.getElementById('nomePessoa').value;
+  const obs = document.getElementById('observacaoPessoa').value;
+  if (!tipo || !doc || !nome) return alert("Preencha os campos obrigatórios da pessoa.");
+
+  const tbody = document.getElementById('tabelaEnvolvidos');
+  if (tbody.querySelectorAll('tr').length === 1 && tbody.innerText.includes('Nenhuma pessoa')) {
+    tbody.innerHTML = '';
+  }
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${doc}</td><td>${tipo}</td><td>${nome}</td><td>${obs}</td>`;
+  tbody.appendChild(tr);
+
+  bootstrap.Modal.getInstance(document.getElementById('modalAdicionarPessoa')).hide();
+  document.getElementById('formPessoa').reset();
+}
+
+// ------------------ ADIÇÃO DE VEÍCULOS ------------------
+document.getElementById('btnAdicionarVeiculo').addEventListener('click', () => {
+  const modal = new bootstrap.Modal(document.getElementById('modalAdicionarVeiculo'));
+  modal.show();
+});
+
+function salvarVeiculo() {
+  const placa = document.getElementById('placaVeiculo').value;
+  const tipo = document.getElementById('tipoVeiculo').value;
+  const caract = document.getElementById('caracteristicaVeiculo').value;
+
+  if (!placa || !tipo) return alert("Placa e tipo do veículo são obrigatórios.");
+
+  const tbody = document.getElementById('tabelaVeiculos');
+  if (tbody.querySelectorAll('tr').length === 1 && tbody.innerText.includes('Nenhum veículo')) {
+    tbody.innerHTML = '';
+  }
+
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${placa}</td><td>${tipo}</td><td>${caract}</td>`;
+  tbody.appendChild(tr);
+
+  bootstrap.Modal.getInstance(document.getElementById('modalAdicionarVeiculo')).hide();
+  document.getElementById('formVeiculo').reset();
+}
+
+// ------------------ ADIÇÃO DE ANEXOS ------------------
+document.getElementById('btnAdicionarAnexo').addEventListener('click', () => {
+  const modal = new bootstrap.Modal(document.getElementById('modalAdicionarAnexo'));
+  modal.show();
+});
+
+function salvarAnexo() {
+  const tipo = document.getElementById('tipoAnexo').value;
+  const arquivos = document.getElementById('arquivoAnexo').files;
+
+  if (!tipo || arquivos.length === 0) {
+    alert("Selecione o tipo e ao menos um arquivo.");
+    return;
+  }
+
+  alert(`${arquivos.length} anexo(s) salvos como ${tipo}.`);
+
+  bootstrap.Modal.getInstance(document.getElementById('modalAdicionarAnexo')).hide();
+  document.getElementById('formAnexo').reset();
+}
+</script>
+
+</body>
+</html>
