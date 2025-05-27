@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Marcação de Danos no Carro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+    }
+
+    .container {
+      position: relative;
+      display: inline-block;
+      margin-top: 20px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .marker {
+      position: absolute;
+      color: red;
+      font-size: 24px;
+      font-weight: bold;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .buttons {
+      margin-top: 20px;
+    }
+
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Marcação de Danos</h2>
+
+  <div class="container" id="imageContainer">
+    <img id="carImage" src="ilustracao-realista-de-um-carro_23-2151227624.avif" alt="Carro">
+  </div>
+
+  <div class="buttons">
+    <button onclick="undoLast()">Desfazer última marcação</button>
+    <button onclick="clearAll()">Limpar todas</button>
+    <button onclick="generatePDF()">Gerar PDF</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script>
+    const container = document.getElementById("imageContainer");
+    const markers = [];
+
+    container.addEventListener("click", function (event) {
+      const rect = container.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const marker = document.createElement("div");
+      marker.className = "marker";
+      marker.style.left = `${x}px`;
+      marker.style.top = `${y}px`;
+      marker.textContent = "X";
+
+      container.appendChild(marker);
+      markers.push(marker);
+    });
+
+    function undoLast() {
+      const last = markers.pop();
+      if (last) last.remove();
+    }
+
+    function clearAll() {
+      markers.forEach(marker => marker.remove());
+      markers.length = 0;
+    }
+
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+
+      const img = document.getElementById("carImage");
+      const canvas = document.createElement("canvas");
+      const scale = 2;
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext("2d");
+
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "red";
+      ctx.font = `${24 * scale}px Arial`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      markers.forEach(marker => {
+        const x = parseFloat(marker.style.left) * scale;
+        const y = parseFloat(marker.style.top) * scale;
+        ctx.fillText("X", x, y);
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      pdf.addImage(imgData, "PNG", 10, 10, 190, 0);
+
+      const pdfBlob = pdf.output("blob");
+      const reader = new FileReader();
+
+      reader.onloadend = function () {
+        const base64pdf = reader.result;
+
+        if (window.opener && !window.opener.closed) {
+          // Envia o PDF para a janela que abriu
+          window.opener.postMessage({ type: "pdf_danos", data: base64pdf }, "*");
+          window.close();
+        } else {
+          // Fallback: baixa o PDF diretamente
+          const a = document.createElement("a");
+          a.href = base64pdf;
+          a.download = "danos.pdf";
+          a.click();
+          alert("PDF gerado e baixado, mas não foi possível enviá-lo ao formulário porque a janela não foi aberta via 'window.open'.");
+        }
+      };
+
+      reader.readAsDataURL(pdfBlob);
+    }
+  </script>
+
+</body>
+</html>
